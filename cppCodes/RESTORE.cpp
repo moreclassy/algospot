@@ -4,53 +4,109 @@
 #include <algorithm>
 #include <cstring>
 #include <cmath>
+#include <fstream>
 
 #define _USE_MATH_DEFINES
 
 using namespace std;
 
-const int MOD = 1000000007;
-string e, digits;
-int n, m;
-int cache[1<<14][20][2];
+vector<string> words;
+const int MAX_N = 15;
+int cache[MAX_N][1<<MAX_N], overlap[MAX_N][MAX_N];
 
 void Reset()
 {
     memset(cache, -1, sizeof(cache));
+    memset(overlap, 0, sizeof(overlap));
+    words.clear();
 }
 
-int Price(int index, int taken, int mod, int less)
+void InsertNewWord(string newStr)
 {
-    if (index == n)
-        return (less && mod == 0) ? 1 : 0;
-    
-    int& ret = cache[taken][mod][less];
-    if (ret != -1) return ret;
-    ret = 0;
-    for (int next = 0; next < n; ++next) if ((taken & (1<<next)) == 0)
+    for (vector<string>::iterator it = words.begin(); it != words.end(); it++)
     {
-        if(!less && e[index] < digits[next])
-            continue;
-        if (next > 0 && digits[next -1] == digits[next] && (taken & (1<<(next -1))) == 0)
-            continue;
-        int nextTaken = taken | (1<<next);
-        int nextMod = (mod*10 + digits[next] - '0') % m;
-        int nextLess = less || e[index] > digits[next];
-        ret += Price(index +1, nextTaken, nextMod, nextLess);
-        ret %= MOD;
+        if (strstr((*it).c_str(), newStr.c_str()) != nullptr) return;
+        if (strstr(newStr.c_str(), (*it).c_str()) != nullptr) words.erase(it);
     }
+    words.push_back(newStr);
+}
+
+void CalcOverlap()
+{
+    for (int i = 0; i < (int)words.size(); i++)
+    {
+        for (int j = 0; j < (int)words.size(); j++)
+        {
+            if (i == j) continue;
+            int minLen = min((int)words[i].length(), (int)words[j].length());
+            int tmpOverlap = 0;
+            for (int k = 1; k < minLen; k++)
+                if (words[i].substr((int)words[i].length() - k, k) == words[j].substr(0, k))
+                    tmpOverlap = k;
+            overlap[i][j] = tmpOverlap;
+        }
+    }
+}
+
+int Restore(int last, int used)
+{
+    if (used == (1<<words.size()) - 1) return 0;
+    
+    int& ret = cache[last][used];
+    if (ret != -1) return ret;
+    
+    ret = 0;
+    for (int next = 0; next < (int)words.size(); next++)
+        if ((used & (1<<next)) == 0)
+        {
+            int cand = overlap[last][next] + Restore(next, used + (1<<next));
+            ret = max(ret, cand);
+        }
+    
     return ret;
+}
+
+string Reconstruction(int last, int used)
+{
+    if (used == ((1<<words.size()) - 1)) return "";
+    
+    for (int next = 0; next < (int)words.size(); next++)
+    {
+        if (used & (1<<next)) continue;
+        int ifUsed = Restore(next, used + (1<<next)) + overlap[last][next];
+        if (Restore(last, used) == ifUsed)
+            return (words[next].substr(overlap[last][next]) + Reconstruction(next, used + (1<<next)));
+    }
+    
+    return "**********fail***********";
 }
 
 void Solve()
 {
     Reset();
-    cin>>e>>m;
-    digits = e;
-    n = (int)e.length();
-    sort(digits.begin(), digits.end());
+    int k;
+    cin>>k;
+    string tmpWord;
+    for (int i = 0; i < k; i++)
+    {
+        cin>>tmpWord;
+        InsertNewWord(tmpWord);
+    }
+    CalcOverlap();
     
-    cout<<Price(0, 0, 0, 0)<<endl;
+    int minLen = 123456789;
+    string result = "";
+    for (int i = 0; i < (int)words.size(); i++)
+    {
+        string tmpStr = words[i] + Reconstruction(i, (1<<i));
+        if (minLen > (int)tmpStr.length())
+        {
+            minLen = (int)tmpStr.length();
+            result = tmpStr;
+        }
+    }
+    
+    cout<<result<<endl;
 }
 
 int main(int argc, const char * argv[]) {
