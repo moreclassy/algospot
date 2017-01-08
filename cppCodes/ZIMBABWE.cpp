@@ -2,45 +2,63 @@
 #include <vector>
 #include <utility>
 #include <algorithm>
-#include <cstdio>
-#include <string>
+#include <cstring>
+#include <cmath>
+
+#define PI 3.14159265
 
 using namespace std;
 
-string e, digits;
-int n, m;
-int cache[1<<14][20][2];
+double p, x, y;
 
-void Reset()
+double Theta(double x_, double y_)
 {
-	memset(cache, 0, sizeof(cache));
+    double arctan = atan2(x_, y_) * 180.0 / PI;
+    
+    if (x_ >= 0 && y_ >= 0)
+        return arctan;
+    if (x_ >= 0 && y_ <= 0)
+        return 180 - arctan;
+    if (x_ <= 0 && y_ <= 0)
+        return 180 + arctan;
+    if (x_ <= 0 && y_ <= 0)
+        return 360 - arctan;
+    
+    return arctan;
 }
 
-int price(int index, int taken, int mod, int less)
+bool IsWhite()
 {
-	if (index == n)
-		return (mod == 0 && less == 1) ? 1 : 0;
-	int& ret = cache[taken][mod][less];
+    double x_ = x - 50.0, y_ = y - 50.0;
+    
+    // out of circle or center
+    if (x_*x_ + y_*y_ > 50.0*50.0 || (x_ == 0 && y_ == 0))
+        return true;
+    
+    if (Theta(x_, y_) <= p*3.6)
+        return false;
+    
+    return true;
 }
 
-void Solve()
+void Solve(int caseNum)
 {
-	Reset();
-	cin>>e>>m;
-	n = e.length();
-	digits = e;
-	sort(digits.begin(), digits.end());
-	cout<<price(0, 0, 0, 1)<<endl;
+    cin>>p>>x>>y;
+    
+    cout<<"Case #"<<caseNum<<": "<<(IsWhite()?"white":"black")<<endl;
 }
 
 int main(int argc, const char * argv[]) {
-	int caseCnt = 0;
-	cin >> caseCnt;
-	
-	cout.precision(10);
-	for (int i = 0; i < caseCnt; i++) {
-		Solve();
-	}
-	
-	return 0;
+    //freopen("input.txt","r",stdin);	freopen("output.txt","w",stdout);
+    
+    int caseCnt = 0;
+    cin>>caseCnt;
+    
+    for (int i = 0; i < caseCnt; i++) {
+        Solve(i+1);
+    }
+    
+    //fclose(stdin);	fclose(stdout);
+    
+    return 0;
 }
