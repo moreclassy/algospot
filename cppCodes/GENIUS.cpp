@@ -45,8 +45,7 @@ class SquareMatrix
     
     SquareMatrix operator*(SquareMatrix& other)
     {
-        if ((int)matrix.size() != other.size())
-            throw "행렬 크기 안맞음";
+        if ((int)matrix.size() != other.size()) throw "행렬 크기 안맞음";
         
         SquareMatrix tmpMatrix(other.size());
         
@@ -107,15 +106,44 @@ void GetInput()
         cin>>favorite[i];
 }
 
+vector<double> getProb()
+{
+    SquareMatrix W(4*n);
+    
+    for (int i = 0; i < 3*n; i++)
+        W[i][i+n] = 1.0;
+    
+    for (int i = 0; i < n; ++i)
+        for (int j = 0; j < n; j++)
+            W[3*n + i][(4 - length[j])*n + j] = T[j][i];
+    
+    SquareMatrix Wk = W.pow(k);
+    
+    vector<double> ret(n, 0);
+    
+    for (int song = 0; song < n; ++song)
+        for (int start = 0; start < length[song]; start++)
+            ret[song] += Wk[(3-start)*n + song][3*n];
+    
+    return ret;
+}
+
 void Solve()
 {
     Reset();
     GetInput();
     
+    vector<double> prob = getProb();
+    
+    for (int i = 0; i < m; i++)
+        cout<<prob[favorite[i]]<<" ";
+    cout<<endl;
 }
 
 int main(int argc, const char * argv[]) {
     freopen("input.txt","r",stdin);	freopen("output.txt","w",stdout);
+    
+    cout.precision(8); cout.setf(ios::showpoint);
     
     int caseCnt = 0;
     cin>>caseCnt;
@@ -123,8 +151,6 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < caseCnt; i++) {
         Solve();
     }
-     
-    fclose(stdin);	fclose(stdout);
     
     return 0;
 }
