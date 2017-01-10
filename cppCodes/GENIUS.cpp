@@ -43,25 +43,40 @@ class SquareMatrix
         return matrix[idx];
     }
     
-    SquareMatrix& operator*(SquareMatrix& other)
+    SquareMatrix operator*(SquareMatrix& other)
     {
         if ((int)matrix.size() != other.size())
-        {
             throw "행렬 크기 안맞음";
-        }
         
-        SquareMatrix tmpMatrix = *this;
+        SquareMatrix tmpMatrix(other.size());
         
         for (int i = 0; i < other.size(); i++) {
             for (int j = 0; j < other.size(); j++) {
                 double tmp = 0;
                 for (int k = 0; k < other.size(); k++)
-                    tmp += tmpMatrix[i][k] * other[k][j];
-                matrix[i][j] = tmp;
+                    tmp += matrix[i][k] * other[k][j];
+                tmpMatrix[i][j] = tmp;
             }
         }
         
-        return *this;
+        return tmpMatrix;
+    }
+    
+    SquareMatrix pow(int exponent)
+    {
+        if (exponent == 1) {
+            SquareMatrix tmpMatrix = (*this);
+            return tmpMatrix;
+        }
+        
+        if (exponent % 2 == 1) {
+            SquareMatrix tmpMatrix = (*this);
+            SquareMatrix tmp2 = this->pow(exponent - 1);
+            return tmpMatrix * tmp2;
+        }
+        
+        SquareMatrix tmpMatrix = this->pow(exponent/2);
+        return tmpMatrix * tmpMatrix;
     }
     
     void print()
@@ -102,23 +117,12 @@ void Solve()
 int main(int argc, const char * argv[]) {
     freopen("input.txt","r",stdin);	freopen("output.txt","w",stdout);
     
-    SquareMatrix W(3);
-    W[0][0] = 1; W[0][1] = 2; W[0][2] = 0;
-    W[1][0] = 2; W[1][1] = 0; W[1][2] = 3;
-    W[2][0] = 2; W[2][1] = 0; W[2][2] = 1;
-    
-    SquareMatrix Z = W;
-    Z[0][0] = 5;
-    
-    Z = (Z * W);
-    Z.print();
-    
-    /*int caseCnt = 0;
+    int caseCnt = 0;
     cin>>caseCnt;
     
     for (int i = 0; i < caseCnt; i++) {
         Solve();
-    }*/
+    }
      
     fclose(stdin);	fclose(stdout);
     
