@@ -26,11 +26,9 @@ class SquareMatrix
             matrix[i] = *new vector<double>(size, 0);
     }
     
-    SquareMatrix& operator=(SquareMatrix& other)
+    void operator=(SquareMatrix& other)
     {
         matrix = other.matrix;
-        
-        return *this;
     }
     
     int size()
@@ -45,7 +43,7 @@ class SquareMatrix
     
     SquareMatrix operator*(SquareMatrix& other)
     {
-        if ((int)matrix.size() != other.size()) throw "행렬 크기 안맞음";
+        if ((int)matrix.size() != other.size()) throw "행렬 크기 안맞음\n";
         
         SquareMatrix tmpMatrix(other.size());
         
@@ -81,7 +79,7 @@ SquareMatrix Identity(int n)
 
 SquareMatrix Pow(SquareMatrix& A, int exponent)
 {
-	if (exponent == 0 ) return Identity(A.size);
+	if (exponent == 0 ) return Identity(A.size());
 	if (exponent%2 > 0) return Pow(A, exponent -1) * A;
 	SquareMatrix half = Pow(A, exponent/2);
 	return half * half;
@@ -142,6 +140,8 @@ void Solve()
 int main(int argc, const char * argv[]) {
     //freopen("input.txt", "r", stdin); freopen("output.txt", "w", stdout); // xcode용
 	//ifstream cin("input.txt"); ofstream cout("output.txt");
+
+	cout.precision(8); cout.setf(ios::showpoint);
 
     int caseCnt = 0;
     cin>>caseCnt;
