@@ -61,23 +61,6 @@ class SquareMatrix
         return tmpMatrix;
     }
     
-    SquareMatrix pow(int exponent)
-    {
-        if (exponent == 1) {
-            SquareMatrix tmpMatrix = (*this);
-            return tmpMatrix;
-        }
-        
-        if (exponent % 2 == 1) {
-            SquareMatrix tmpMatrix = (*this);
-            SquareMatrix tmp2 = this->pow(exponent - 1);
-            return tmpMatrix * tmp2;
-        }
-        
-        SquareMatrix tmpMatrix = this->pow(exponent/2);
-        return tmpMatrix * tmpMatrix;
-    }
-    
     void print()
     {
         for (int i = 0; i < matrix.size(); i++) {
@@ -87,6 +70,22 @@ class SquareMatrix
         }
     }
 };
+
+SquareMatrix Identity(int n)
+{
+	SquareMatrix tmpMatrix(n);
+	for (int i = 0; i < n; i++)
+		tmpMatrix[i][i] = 1;
+	return tmpMatrix;
+}
+
+SquareMatrix Pow(SquareMatrix& A, int exponent)
+{
+	if (exponent == 0 ) return Identity(A.size);
+	if (exponent%2 > 0) return Pow(A, exponent -1) * A;
+	SquareMatrix half = Pow(A, exponent/2);
+	return half * half;
+}
 
 void Reset()
 {
@@ -117,7 +116,7 @@ vector<double> getProb()
         for (int j = 0; j < n; j++)
             W[3*n + i][(4 - length[j])*n + j] = T[j][i];
     
-    SquareMatrix Wk = W.pow(k);
+    SquareMatrix Wk = Pow(W, k);
     
     vector<double> ret(n, 0);
     
@@ -141,10 +140,9 @@ void Solve()
 }
 
 int main(int argc, const char * argv[]) {
-    freopen("input.txt","r",stdin);	freopen("output.txt","w",stdout);
-    
-    cout.precision(8); cout.setf(ios::showpoint);
-    
+    //freopen("input.txt", "r", stdin); freopen("output.txt", "w", stdout); // xcode용
+	//ifstream cin("input.txt"); ofstream cout("output.txt");
+
     int caseCnt = 0;
     cin>>caseCnt;
     
