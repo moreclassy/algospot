@@ -28,8 +28,21 @@ class SquareMatrix
     
     void operator=(SquareMatrix& other)
     {
-        matrix = other.matrix;
+		if ((int)matrix.size() != other.size())
+		{
+			matrix = other.matrix;
+			return;
+		}
+		other.copy(*this);
     }
+
+	void copy(SquareMatrix& other)
+	{
+		if ((int)matrix.size() != other.size()) throw "행렬 크기 안맞음\n";
+		for (int i = 0; i < other.size(); i++)
+			for (int j = 0; j < other.size(); j++)
+				matrix[i][j] = other[i][j];
+	}
     
     int size()
     {
@@ -61,8 +74,8 @@ class SquareMatrix
     
     void print()
     {
-        for (int i = 0; i < matrix.size(); i++) {
-            for (int j = 0; j < matrix[i].size(); j++)
+        for (int i = 0; i < (int)matrix.size(); i++) {
+            for (int j = 0; j < (int)matrix[i].size(); j++)
                 cout<<matrix[i][j]<<" ";
             cout<<endl;
         }
