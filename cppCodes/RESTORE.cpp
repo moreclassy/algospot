@@ -92,6 +92,7 @@ void Solve()
         cin>>tmpWord;
         InsertNewWord(tmpWord);
     }
+    
     CalcOverlap();
     
     int minLen = 1234567890;

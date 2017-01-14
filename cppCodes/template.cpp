@@ -37,7 +37,5 @@ int main(int argc, const char * argv[]) {
         Solve();
     }
     
-    fclose(stdin);	fclose(stdout);
-    
     return 0;
 }
