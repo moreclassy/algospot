@@ -94,7 +94,7 @@ void Solve()
     }
     CalcOverlap();
     
-    int minLen = 123456789;
+    int minLen = 1234567890;
     string result = "";
     for (int i = 0; i < (int)words.size(); i++)
     {
@@ -110,7 +110,7 @@ void Solve()
 }
 
 int main(int argc, const char * argv[]) {
-    freopen("input.txt","r",stdin);	freopen("output.txt","w",stdout);
+    freopen("input.txt", "r", stdin); freopen("output.txt", "w", stdout);
     
     int caseCnt = 0;
     cin>>caseCnt;
@@ -118,8 +118,6 @@ int main(int argc, const char * argv[]) {
     for (int i = 0; i < caseCnt; i++) {
         Solve();
     }
-    
-    fclose(stdin);	fclose(stdout);
     
     return 0;
 }
