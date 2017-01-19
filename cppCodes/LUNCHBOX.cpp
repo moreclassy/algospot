@@ -10,6 +10,8 @@
 
 using namespace std;
 
+int n, m[10001], e[10001];
+
 void Reset()
 {
     
@@ -17,7 +19,11 @@ void Reset()
 
 void GetInput()
 {
-    
+    cin>>n;
+	for (int i = 0; i < n; i++)
+		cin>>m[i];
+	for (int i = 0; i < n; i++)
+		cin>>e[i];
 }
 
 void Solve()
