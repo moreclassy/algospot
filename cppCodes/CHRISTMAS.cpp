@@ -23,6 +23,7 @@ void GetInput()
 {
     cin>>n>>k;
 	int sum = 0, Di;
+	pSum.push_back(0);
 	for (int i = 0; i < n; i++)
 	{
 		cin>>Di;
@@ -30,12 +31,6 @@ void GetInput()
 		sum %= MOD;
 		pSum.push_back(sum);
 	}
-}
-
-int GetPSum(int idx)
-{
-	if (idx == -1) return 0;
-	return pSum[idx];
 }
 
 int SolveFirst()
