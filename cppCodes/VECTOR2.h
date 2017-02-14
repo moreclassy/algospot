@@ -1,67 +1,51 @@
-#include <iostream>
-#include <vector>
-#include <utility>
-#include <algorithm>
-#include <cstring>
-#include <cmath>
+const double PI = 2.0 * acos(0.0);
 
-#define _USE_MATH_DEFINES
-
-using namespace std;
-
-const int MOD = 1000000007;
-string e, digits;
-int n, m;
-int cache[1<<14][20][2];
-
-void Reset()
-{
-    memset(cache, -1, sizeof(cache));
-}
-
-int Price(int index, int taken, int mod, int less)
-{
-    if (index == n)
-        return (less && mod == 0) ? 1 : 0;
+struct vector2 {
+    double x, y;
     
-    int& ret = cache[taken][mod][less];
-    if (ret != -1) return ret;
-    ret = 0;
-    for (int next = 0; next < n; ++next) if ((taken & (1<<next)) == 0)
-    {
-        if(!less && e[index] < digits[next])
-            continue;
-        if (next > 0 && digits[next -1] == digits[next] && (taken & (1<<(next -1))) == 0)
-            continue;
-        int nextTaken = taken | (1<<next);
-        int nextMod = (mod*10 + digits[next] - '0') % m;
-        int nextLess = less || e[index] > digits[next];
-        ret += Price(index +1, nextTaken, nextMod, nextLess);
-        ret %= MOD;
-    }
-    return ret;
-}
-
-void Solve()
-{
-    Reset();
-    cin>>e>>m;
-    digits = e;
-    n = (int)e.length();
-    sort(digits.begin(), digits.end());
+    explicit vector2(double x_ = 0, double y_ = 0) : x(x_), y(y_)
+    {}
     
-    cout<<Price(0, 0, 0, 0)<<endl;
-}
-
-int main(int argc, const char * argv[]) {
-    freopen("input.txt","r",stdin);	freopen("output.txt","w",stdout);
-    
-    int caseCnt = 0;
-    cin>>caseCnt;
-    
-    for (int i = 0; i < caseCnt; i++) {
-        Solve();
+    bool operator == (const vector2& rhs) const {
+        return x == rhs.x && y == rhs.y;
     }
     
-    return 0;
-}
+    bool operator < (const vector2& rhs) const {
+        return x != rhs.x ? x < rhs.x : y < rhs.y;
+    }
+    
+    vector2 operator + (const vector2& rhs) const {
+        return vector2(x + rhs.x, y + rhs.y);
+    }
+    
+    vector2 operator - (const vector2& rhs) const {
+        return vector2(x - rhs.x, y - rhs.y);
+    }
+    
+    vector2 operator * (double rhs) const {
+        return vector2(x * rhs, y * rhs);
+    }
+    
+    double norm() const { return hypot(x, y); }
+    
+    vector2 normalize() const {
+        return vector2(x / norm(), y / norm());
+    }
+    
+    // x축의 양의 방향으로부터 이 벡터까지 반시계 방향으로 잰 각도
+    double polar() const { return fmod(atan2(y, x) + 2*PI, 2*PI); }
+    
+    double dot(const vector2& rhs) const {
+        return x*rhs.x + y*rhs.y;
+    }
+    
+    double cross(const vector2& rhs) const {
+        return x*rhs.y - y*rhs.x;
+    }
+    
+    // 이 벡터를 rhs에 사영한 결과
+    vector2 project(const vector2& rhs) const {
+        vector2 r = rhs.normalize();
+        return r * r.dot(rhs);
+    }
+};
