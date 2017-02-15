@@ -65,7 +65,7 @@ polygon giftWrap(const vector<vector2>& points)
 
 bool polygonIntersects(const polygon& p, const polygon& q)
 {
-	int n = p.size(), m = q.size();
+	int n = (int)p.size(), m = (int)q.size();
 
 	if (isInside(p[0], q) || isInside(q[0], p)) return true;
 
@@ -82,7 +82,7 @@ void Solve()
 	reset();
     GetInput();
     
-	if (segmentIntersects(giftWrap(nerd), giftWrap(notNerd)))
+	if (polygonIntersects(giftWrap(nerd), giftWrap(notNerd)))
 		cout<<"THEORY IS INVALID";
 	else
 		cout<<"THEORY HOLDS";
