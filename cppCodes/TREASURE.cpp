@@ -37,7 +37,7 @@ void GetInput()
 
 polygon cutPoly(const polygon& p, const vector2& a, const vector2& b)
 {
-	int n = p.size();
+	int n = (int)p.size();
 	vector<bool> inside(n);
 	for (int i = 0; i < n; i++)
 		inside[i] = ccw(a, b, p[i]) >= 0;
@@ -94,7 +94,7 @@ int main(int argc, const char * argv[]) {
     cin>>caseCnt;
 
 	cout<<fixed;
-	cout.precision(8);
+	cout.precision(10);
     
     for (int i = 0; i < caseCnt; i++) {
         Solve();

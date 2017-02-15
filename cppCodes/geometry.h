@@ -1,3 +1,5 @@
+using namespace std;
+
 const double PI = 2.0 * acos(0.0);
 
 struct vector2 {
