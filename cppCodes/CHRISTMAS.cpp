@@ -33,32 +33,46 @@ void GetInput()
 	}
 }
 
-int SolveFirst()
+int waysToBuy()
 {
-	vector<int> tmpList = pSum;
-	sort(tmpList.begin(), tmpList.end());
-	int before = tmpList[0], cnt = 0, result = 0;
-	for (int i = 1; i < tmpList.size(); i++)
-	{
-		if (tmpList[i] == before) {
-			cnt++;
-			continue;
-		}
-		if (cnt > 1) {
-			result += cnt * (cnt - 1) / 2;
-			cnt = 1;
-			before = tmpList[i];
-		}
-	}
+    int ret = 0;
+    
+    vector<long long> count(k, 0);
+    for (int i = 0; i < pSum.size(); i++)
+        count[pSum[i]]++;
+    
+    for (int i = 0; i < k; i++)
+        if (count[i] >= 2)
+            ret += ((count[i] * (count[i] - 1) / 2) % MOD);
+    
+    return ret;
+}
 
-	return result;
+int maxBuys()
+{
+    vector<int> ret(pSum.size(), 0);
+    vector<int> prev(k, -1);
+    for (int i = 0; i < pSum.size(); i++)
+    {
+        if (i < 0)
+            ret[i] = ret[i - 1];
+        else
+            ret[i] = 0;
+        int loc = prev[pSum[i]];
+        if (loc != -1)
+            ret[i] = max(ret[i], ret[loc] + 1);
+        prev[pSum[i]] = i;
+    }
+    
+    return ret.back();
 }
 
 void Solve()
 {
     Reset();
     GetInput();
-    cout<<SolveFirst()<<" "<<endl;;
+    
+    cout<<waysToBuy()<<" "<<maxBuys()<<endl;
 }
 
 int main(int argc, const char * argv[]) {
