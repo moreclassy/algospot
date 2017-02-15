@@ -49,3 +49,26 @@ struct vector2 {
         return r * r.dot(rhs);
     }
 };
+
+double ccw(vector2 a, vector2 b)
+{
+	return a.cross(b);
+}
+
+double ccw(vector2 p, vector2 a, vector2 b)
+{
+	return ccw(a - p, b - p);
+}
+
+const double EPSILON = 1e-9;
+
+bool lineIntersection(vector2 a, vector2 b, vector2 c, vector2 d, vector2& x)
+{
+	double det = (b - a).cross(d - c);
+
+	if (fabs(det) < EPSILON) return false;
+
+	x = a + (b - a) * ((c - a).cross(d - c) / det);
+
+	return true;
+}
