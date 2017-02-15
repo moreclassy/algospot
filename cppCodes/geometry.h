@@ -72,3 +72,33 @@ bool lineIntersection(vector2 a, vector2 b, vector2 c, vector2 d, vector2& x)
 
 	return true;
 }
+
+bool segmentIntersects(vector2 a, vector2 b, vector2 c, vector2 d)
+{
+	double ab = ccw(a, b, c) * ccw(a, b, d);
+	double cd = ccw(c, d, a) * ccw(c, d, b);
+
+	if (ab == 0 && cd == 0)
+	{
+		if (b < a) swap(a, b);
+		if (d < c) swap(c, d);
+		return !(b < c || d < a);
+	}
+	return ab <= 0 && cd <= 0;
+}
+
+bool isInside(vector2 q, const vector<vector2>& p)
+{
+	int crosses = 0;
+	for (int i = 0; i < p.size(); i++)
+	{
+		int j = (i + 1) % p.size();
+		if ((p[i].y > q.y) != (p[j].y > q.y))
+		{
+			double atX = (p[j].x - p[i].x) * (q.y - p[i].y) / (p[j].y - p[i].y) + p[i].x;
+			if (q.x < atX)
+				++crosses;
+		}
+	}
+	return crosses % 2 > 0;
+}
