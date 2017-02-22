@@ -39,13 +39,12 @@ void Solve()
     
     for (int i = 0; i < n; i++)
     {
-        if (i%2) {
-            cin>>b;
+        cin>>b;
+        if (i%2)
             result += shifts(a, b);
-        } else {
-            cin>>a;
+        else
             result += shifts(b, a);
-        }
+        swap(a, b);
     }
     cout<<result<<endl;
 }
