@@ -27,7 +27,7 @@ int solution(vector<int> s)
     int answer = max(helper(s, s.size() -1, 0), helper(s, s.size() -1, 1));
     
     // 첫 번째를 선택함
-    dp = vector<vector<int>>(s.size(), vector<int>(2, -1));
+    fill(dp.begin(), dp.end(), vector<int>(2, -1));
     dp[0][0] = 0;
     dp[0][1] = s[0];
     answer = max(answer, helper(s, s.size() -1, 0));
