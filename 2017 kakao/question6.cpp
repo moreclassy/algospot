@@ -28,7 +28,7 @@ int solution(vector<int> s)
     
     // 첫 번째를 선택함
     dp = vector<vector<int>>(s.size(), vector<int>(2, -1));
-    dp[0][0] = -987654321;
+    dp[0][0] = 0;
     dp[0][1] = s[0];
     answer = max(answer, helper(s, s.size() -1, 0));
     
