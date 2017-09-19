@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <cstring>
 
 using namespace std;
 
@@ -74,13 +75,41 @@ int game(int i) {
     int& ret = dp[i];
     if (ret != -1) return ret;
     
+    ret = 0;
+    
     vector<vector<char>> g = convert(i);
     if (isWin(g, 'x')) return ret = 1;
-    if (isWin(g, 'o')) return ret = 1;
+    if (isWin(g, 'o')) return ret = 2;
     
+    int x = 0, o = 0;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (g[i][j] == 'x') x++;
+            else if (g[i][j] == 'o') o++;
+        }
+    }
     
+    if (x + o == 9) return ret = 0;
     
-    return ret;
+    char t = o < x ? 'o' : 'x';
+    
+    int zero = 0;
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (g[i][j] == '.') {
+                g[i][j] = t;
+                int tmp = game(convert(g));
+                if (tmp == 1 && t == 'x') return ret = 1;
+                if (tmp == 2 && t == 'o') return ret = 2;
+                if (tmp == 0) zero++;
+                g[i][j] = '.';
+            }
+        }
+    }
+    
+    if (zero) return ret = 0;
+    
+    return ret = (t == 'x' ? 2 : 1);
 }
 
 void solve() {
@@ -92,6 +121,12 @@ void solve() {
         }
     }
     
+    int ret = game(convert(input));
+    
+    if (ret == 0) cout<<"TIE";
+    else if (ret == 1) cout<<'x';
+    else if (ret == 2) cout<<'o';
+    cout<<endl;
 }
 
 int main() {
