@@ -1,6 +1,7 @@
 #include <iostream>
 #include <algorithm>
 #include <cstring>
+#include <string>
 
 using namespace std;
 
@@ -40,10 +41,15 @@ void getStr(int l, int s, int k, string& str) {
 	if (comb > k) {
 		str += '-';
 		l--;
-	} else {
+	} else if (comb < k) {
 		str += 'o';
 		k -= comb;
 		s--;
+	} else {
+		str += '-';
+		l--;
+		str += string(s, 'o') + string(l, '-');
+		return;
 	}
 	getStr(l, s, k, str);
 }
