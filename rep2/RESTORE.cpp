@@ -4,11 +4,12 @@
 #include <algorithm>
 #include <cmath>
 #include <cassert>
+#include <cstring>
 
 using namespace std;
 
 vector<string> word;
-vector<vector<int>> overlap(15, vector<int>(15, 0));
+vector<vector<int>> overlap;
 int visited;
 vector<vector<int>> dp;
 
@@ -33,6 +34,7 @@ int countOverlap(string& a, string& b) {
 
 void getInput() {
     word = vector<string>();
+    auto allword = vector<string>();
     visited = 0;
     
     int k;
@@ -41,17 +43,26 @@ void getInput() {
     for (int i = 0; i < k; i++) {
         string input;
         cin>>input;
+        allword.push_back(input);
+    }
+    
+    for (int i = 0; i < allword.size(); i++) {
         bool skip = false;
-        for (auto w : word) {
-            if (w.find(input) != string::npos) {
+        for (int j = 0; j < allword.size(); j++) {
+            if (i == j) continue;
+            if (allword[j].find(allword[i]) != string::npos) {
+                if (i < j && allword[i] == allword[j]) {
+                    continue;
+                }
                 skip = true;
                 break;
             }
         }
         if (skip) continue;
-        word.push_back(input);
+        word.push_back(allword[i]);
     }
     
+    overlap = vector<vector<int>>(word.size(), vector<int>(word.size(), -987654321));
     for (int i = 0; i < word.size(); i++) {
         for (int j = 0; j < word.size(); j++) {
             if (i == j) continue;
