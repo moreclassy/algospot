@@ -9,7 +9,7 @@
 using namespace std;
 
 vector<string> word;
-vector<vector<int>> overlap;
+int overlap[15][15];
 int visited;
 vector<vector<int>> dp;
 
@@ -43,17 +43,21 @@ void getInput() {
     for (int i = 0; i < k; i++) {
         string input;
         cin>>input;
+        bool skip = false;
+        for (auto w : allword) {
+            if (w.find(input) != string::npos) {
+                skip = true;
+                break;
+            }
+        }
+        if (skip) continue;
         allword.push_back(input);
     }
     
     for (int i = 0; i < allword.size(); i++) {
         bool skip = false;
-        for (int j = 0; j < allword.size(); j++) {
-            if (i == j) continue;
+        for (int j = i + 1; j < allword.size(); j++) {
             if (allword[j].find(allword[i]) != string::npos) {
-                if (i < j && allword[i] == allword[j]) {
-                    continue;
-                }
                 skip = true;
                 break;
             }
@@ -62,7 +66,6 @@ void getInput() {
         word.push_back(allword[i]);
     }
     
-    overlap = vector<vector<int>>(word.size(), vector<int>(word.size(), -987654321));
     for (int i = 0; i < word.size(); i++) {
         for (int j = 0; j < word.size(); j++) {
             if (i == j) continue;
