@@ -7,94 +7,21 @@
 
 using namespace std;
 
-string board[5];
-vector<char> dp;
-int lblock[4][3][2] = {
-    { {0, 0}, {1, 0}, {1, 1} },
-    { {0, 0}, {1, 0}, {0, 1} },
-    { {0, 0}, {1, 1}, {0, 1} },
-    { {1, 0}, {0, 1}, {1, 1} },
-};
+char dp[1<<25];
+vector<int> moves;
 
-int convert() {
+inline int cell(int r, int c) { return 1 << (5 * r + c); }
+
+int getInputState() {
     int ret = 0;
-    
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            if (board[i][j] == '#')
-                ret += 1;
-            ret <<= 1;
-        }
-    }
-    ret >>= 1;
-    return ret;
-}
-
-vector<string> convert(int state) {
-    vector<string> ret(5, string(5, '.'));
-    
-    for (int i = 24; i >= 0; i--) {
-        if (state & (1<<i)) {
-            ret[(25-i-1)/5][(25-i-1)%5] = '#';
-        }
+    for (int i = 0; i < 25; i++) {
+        char in;
+        cin>>in;
+        if (in == '#')
+            ret += (1<<i);
     }
     
     return ret;
-}
-
-void print(vector<string>& state) {
-    cout<<endl;
-    for (auto s : state) {
-        cout<<s<<endl;
-    }
-    cout<<endl;
-}
-
-void print(int state) {
-    auto origin = convert(state);
-    print(origin);
-}
-
-void getInput() {
-    for (int i = 0; i < 5; i++)
-        cin>>board[i];
-    
-    dp = vector<char>(1<<26, 'n');
-}
-
-int putBlock(int state, int r, int c) {
-    state |= (1<<(5*(4 - r) + 4 - c));
-    return state;
-}
-
-int removeBlock(int state, int r, int c) {
-    state &= ~(1<<(5*(4 - r) + 4 - c));
-    return state;
-}
-
-bool isEmpty(int state, int r, int c) {
-    return (state & (1<<(5*(4 - r) + 4 - c))) == 0;
-}
-
-bool isPossible(int state, int r, int c, int blck) {
-    for (int i = 0; i < 3; i++) {
-        int nr = r + lblock[blck][i][0];
-        int nc = c + lblock[blck][i][1];
-        if (!isEmpty(state, nr, nc))
-            return false;
-    }
-    
-    return true;
-}
-
-int putLBlock(int state, int r, int c, int blck) {
-    for (int i = 0; i < 3; i++) {
-        int nr = r + lblock[blck][i][0];
-        int nc = c + lblock[blck][i][1];
-        state = putBlock(state, nr, nc);
-    }
-    
-    return state;
 }
 
 int flipLeft(int state) {
@@ -102,8 +29,8 @@ int flipLeft(int state) {
     
     for (int r = 0; r < 5; r++) {
         for (int c = 0; c < 5; c++) {
-            if (!isEmpty(state, r, c)) {
-                nextState = putBlock(nextState, r, 4 - c);
+            if ((state & cell(r, c)) != 0) {
+                nextState += cell(r, 4 - c);
             }
         }
     }
@@ -116,8 +43,50 @@ int flipUp(int state) {
     
     for (int r = 0; r < 5; r++) {
         for (int c = 0; c < 5; c++) {
-            if (!isEmpty(state, r, c)) {
-                nextState = putBlock(nextState, 4 - r, c);
+            if ((state & cell(r, c)) != 0) {
+                nextState += cell(4 - r, c);
+            }
+        }
+    }
+    
+    return nextState;
+}
+
+int rotate(int state) {
+    int nextState = 0;
+    
+    for (int r = 0; r < 5; r++) {
+        for (int c = 0; c < 5; c++) {
+            if ((state & cell(r, c)) != 0) {
+                nextState += cell(c, 4 - r);
+            }
+        }
+    }
+    
+    return nextState;
+}
+
+int diag1(int state) {
+    int nextState = 0;
+    
+    for (int r = 0; r < 5; r++) {
+        for (int c = 0; c < 5; c++) {
+            if ((state & cell(r, c)) != 0) {
+                nextState += cell(c, r);
+            }
+        }
+    }
+    
+    return nextState;
+}
+
+int diag2(int state) {
+    int nextState = 0;
+    
+    for (int r = 0; r < 5; r++) {
+        for (int c = 0; c < 5; c++) {
+            if ((state & cell(r, c)) != 0) {
+                nextState += cell(4 - r, 4 - c);
             }
         }
     }
@@ -126,66 +95,71 @@ int flipUp(int state) {
 }
 
 void setVal(int state, char val) {
-    int flip = flipLeft(state);
-    dp[flip] = val;
-    flip = flipUp(flip);
-    dp[flip] = val;
-    flip = flipLeft(flip);
-    dp[flip] = val;
+    int rot = state;
+    for (int i = 0; i < 3; i++) {
+        rot = rotate(rot);
+        dp[rot] = val;
+    }
+    dp[flipLeft(state)] = val;
+    dp[flipUp(state)] = val;
+    dp[diag1(state)] = val;
+    dp[diag2(state)] = val;
 }
 
 char canWin(int state) {
     char &ret = dp[state];
-    if (ret != 'n') return ret;
+    if (ret != -1) return ret;
     
-    for (int r = 0; r < 5; r++) {
-        for (int c = 0; c < 5; c++) {
-            if (c < 4 && isEmpty(state, r, c) && isEmpty(state, r, c+1)) {
-                int nextState = putBlock(state, r, c);
-                nextState = putBlock(nextState, r, c+1);
-                if (canWin(nextState) == 'l') {
-                    setVal(state, 'w');
-                    return ret = 'w';
-                }
-            }
-            
-            if (r < 4 && isEmpty(state, r, c) && isEmpty(state, r+1, c)) {
-                int nextState = putBlock(state, r, c);
-                nextState = putBlock(nextState, r+1, c);
-                if (canWin(nextState) == 'l') {
-                    setVal(state, 'w');
-                    return ret = 'w';
-                }
-            }
-            
-            if (c < 4 && r < 4) {
-                for (int blck = 0; blck < 4; blck++) {
-                    if (isPossible(state, r, c, blck)) {
-                        int nextState = putLBlock(state, r, c, blck);
-                        if (canWin(nextState) == 'l') {
-                            setVal(state, 'w');
-                            return ret = 'w';
-                        }
-                    }
-                }
-            }
+    for (int i = 0; i < moves.size(); i++) {
+        if ((moves[i] & state) == 0 && canWin(state | moves[i]) == 0) {
+            setVal(state, 1);
+            return ret = 1;
         }
     }
     
-    setVal(state, 'l');
-    return ret = 'l';
+    setVal(state, 0);
+    return ret = 0;
 }
 
 void solve() {
-    getInput();
+    memset(dp, -1, 1<<25);
+    dp[0] = 0;
     
-    if (canWin(convert()) == 'w')
+    int state = getInputState();
+    
+    if (canWin(state) == 1)
         cout<<"WINNING"<<endl;
     else
         cout<<"LOSING"<<endl;
 }
 
+void preCalc() {
+    for (int r = 0; r < 4; r++)  {
+        for (int c = 0; c < 4; c++) {
+            vector<int> cells;
+            for (int dr = 0; dr < 2; dr++) {
+                for (int dc = 0; dc < 2; dc++) {
+                    cells.push_back(cell(r + dr, c + dc));
+                }
+            }
+            int square = cells[0] + cells[1] + cells[2] + cells[3];
+            for (int i = 0; i < 4; i++) {
+                moves.push_back(square - cells[i]);
+            }
+        }
+    }
+    
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 4; j++) {
+            moves.push_back(cell(i, j) + cell(i, j+1));
+            moves.push_back(cell(j, i) + cell(j+1, i));
+        }
+    }
+}
+
 int main() {
+    preCalc();
+    
     int c;
     cin>>c;
     
