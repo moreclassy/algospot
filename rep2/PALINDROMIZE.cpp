@@ -23,6 +23,7 @@ vector<int> getPartialMatch(const string& str) {
     return pi;
 }
 
+// max length of string which is a's suffix and b's prefix
 int maxOverlap(const string& a, const string& b) {
     auto pi = getPartialMatch(b);
     int begin = 0, matched = 0;
