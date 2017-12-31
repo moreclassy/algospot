@@ -23,14 +23,6 @@ vector<int> getPartialMatch(const string& str) {
     return pi;
 }
 
-void getReversedNames(vector<int>& pi, int len, vector<int>& names) {
-    if (len == 0) return;
-    int p = pi[len - 1];
-    if (p == 0) return;
-    names.push_back(p);
-    getReversedNames(pi, p, names);
-}
-
 int main() {
     string father; cin>>father;
     string mother; cin>>mother;
