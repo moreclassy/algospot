@@ -9,7 +9,7 @@ using namespace std;
 void solve() {
     int n; cin>>n;
     vector<vector<pair<int, double>>> edge(n);
-    vector<double> cost(n, 1000000*(double)LLONG_MIN);
+    vector<double> cost(n, 1);
     
     int m; cin>>m;
     for (int i = 0; i < m; i++) {
@@ -22,22 +22,21 @@ void solve() {
     
     priority_queue<pair<double, int>> pq;
     pq.push({-1.0, 0});
-    vector<bool> visited(n, false);
     
     while (!pq.empty()) {
         int curNode = pq.top().second;
         double curCost = pq.top().first;
         pq.pop();
         
-        if (visited[curNode]) continue;
-        visited[curNode] = true;
+		if (cost[curNode] < 0.5) continue;
         cost[curNode] = curCost;
         
         for (auto e : edge[curNode]) {
             int nextNode = e.first;
             double nextCost = curCost * e.second;
             
-            if (!visited[nextNode]) pq.push({nextCost, nextNode});
+			if (cost[nextNode] > 0.5)
+				pq.push({nextCost, nextNode});
         }
     }
     
