@@ -18,16 +18,12 @@ bool canEverybodyEat(const long long nameSet) {
 void selectMenu(int foodCnt, int food, long long nameSet) {
     if (foodCnt >= minVal) return;
     
-    if (food == m) {
-        if (canEverybodyEat(nameSet))
-            minVal = foodCnt;
-        return;
-    }
-    
     if (canEverybodyEat(nameSet)) {
         minVal = foodCnt;
         return;
     }
+    
+    if (food == m) return;
     
     selectMenu(foodCnt + 1, food + 1, nameSet | menuEater[food]);
     selectMenu(foodCnt, food + 1, nameSet);
