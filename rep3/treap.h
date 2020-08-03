@@ -16,19 +16,19 @@ using namespace std;
 
 typedef int KeyType;
 
-struct TreaNode {
+struct TreapNode {
     KeyType key;
     int priority, size;
-    TreaNode *left, *right;
+    TreapNode *left, *right;
     
-    TreaNode(const KeyType& _key) : key(_key), priority(rand()), size(1), left(NULL), right(NULL) { }
+    TreapNode(const KeyType& _key) : key(_key), priority(rand()), size(1), left(NULL), right(NULL) { }
     
-    void setLeft(TreaNode* newLeft) {
+    void setLeft(TreapNode* newLeft) {
         left = newLeft;
         calcSize();
     }
     
-    void setRight(TreaNode* newRight) {
+    void setRight(TreapNode* newRight) {
         right = newRight;
         calcSize();
     }
@@ -40,40 +40,40 @@ struct TreaNode {
     }
 };
 
-typedef pair<TreaNode*, TreaNode*> TreaNodePair;
+typedef pair<TreapNode*, TreapNode*> TreapNodePair;
 
-TreaNodePair split(TreaNode* root, KeyType key) {
-    if (root == NULL) return TreaNodePair(NULL, NULL);
+TreapNodePair split(TreapNode* root, KeyType key) {
+    if (root == NULL) return TreapNodePair(NULL, NULL);
     
     if (root->key < key) {
-        TreaNodePair rs = split(root->right, key);
+        TreapNodePair rs = split(root->right, key);
         root->setRight(rs.first);
-        return TreaNodePair(root, rs.second);
+        return TreapNodePair(root, rs.second);
     }
     
-    TreaNodePair ls = split(root->left, key);
+    TreapNodePair ls = split(root->left, key);
     root->setLeft(ls.second);
-    return TreaNodePair(ls.first, root);
+    return TreapNodePair(ls.first, root);
 }
 
-TreaNode* insert(TreaNode* root, TreaNode* TreaNode) {
-    if (root == NULL) return TreaNode;
+TreapNode* insert(TreapNode* root, TreapNode* TreapNode) {
+    if (root == NULL) return TreapNode;
     
-    if (root->priority < TreaNode->priority) {
-        TreaNodePair splitted = split(root, TreaNode->key);
-        TreaNode->setLeft(splitted.first);
-        TreaNode->setRight(splitted.second);
-        return TreaNode;
-    } else if (TreaNode->key < root->key) {
-        root->setLeft(insert(root->left, TreaNode));
+    if (root->priority < TreapNode->priority) {
+        TreapNodePair splitted = split(root, TreapNode->key);
+        TreapNode->setLeft(splitted.first);
+        TreapNode->setRight(splitted.second);
+        return TreapNode;
+    } else if (TreapNode->key < root->key) {
+        root->setLeft(insert(root->left, TreapNode));
     } else {
-        root->setRight(insert(root->right, TreaNode));
+        root->setRight(insert(root->right, TreapNode));
     }
     
     return root;
 }
 
-TreaNode* merge(TreaNode* a, TreaNode* b) {
+TreapNode* merge(TreapNode* a, TreapNode* b) {
     if (a == NULL) return b;
     if (b == NULL) return a;
     
@@ -86,11 +86,11 @@ TreaNode* merge(TreaNode* a, TreaNode* b) {
     return a;
 }
 
-TreaNode* erase(TreaNode* root, KeyType key) {
+TreapNode* erase(TreapNode* root, KeyType key) {
     if (root == NULL) return root;
     
     if (root->key == key) {
-        TreaNode* ret = merge(root->left, root->right);
+        TreapNode* ret = merge(root->left, root->right);
         delete root;
         return ret;
     }
@@ -104,7 +104,7 @@ TreaNode* erase(TreaNode* root, KeyType key) {
     return root;
 }
 
-TreaNode* kth(TreaNode* root, int k) {
+TreapNode* kth(TreapNode* root, int k) {
     int leftSize = 0;
     if (root->left != NULL) leftSize = root->left->size;
     if (k <= leftSize) return kth(root->left, k);
